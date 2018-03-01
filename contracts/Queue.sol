@@ -9,31 +9,32 @@ pragma solidity ^0.4.15;
 
 contract Queue {
 	/* State variables */
+    struct _Queue {
+        uint256[] data;
+        uint8 front;
+        uint8 back;
+    }
 	uint8 size = 5;
+    _Queue arr;
 	// YOUR CODE HERE
-
-	/* Add events */
+    	/* Add events */
 	// YOUR CODE HERE
 
 	/* Add constructor */
-	// YOUR CODE HERE
-
-	struct Queue {
-        uint[] data;
-        uint front;
-        uint back;
+    jfunction Queue(uint[] _data, uint8 _front, uint8 _back) public {
+        arr = _Queue({data : _data, front : _front, back : _back});
     }
 
 	/* Returns the number of people waiting in line */
 	function qsize() constant returns(uint8) {
 		// YOUR CODE HERE
-		return back - front
+		return arr.back - arr.front;
 	}
 
 	/* Returns whether the queue is empty or not */
 	function empty() constant returns(bool) {
 		// YOUR CODE HERE
-		return front == back
+		return arr.front == arr.back;
 	}
 	
 	/* Returns the address of the person in the front of the queue */
@@ -63,6 +64,5 @@ contract Queue {
 	/* Places `addr` in the first empty position in the queue */
 	function enqueue(address addr) {
 		// YOUR CODE HERE
-		data.push(addr)
 	}
 }

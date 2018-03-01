@@ -10,7 +10,7 @@ pragma solidity ^0.4.15;
 contract Queue {
 	/* State variables */
     struct _Queue {
-        uint256[] data;
+        address[] data;
         uint8 front;
         uint8 back;
     }
@@ -21,10 +21,14 @@ contract Queue {
 	// YOUR CODE HERE
 
 	/* Add constructor */
-    jfunction Queue(uint[] _data, uint8 _front, uint8 _back) public {
+    function Queue() public {
+        arr = _Queue({data : new address[](size), front : 0, back : 1});
+    }
+/*
+    function Queue(address[] _data, uint8 _front, uint8 _back) public {
         arr = _Queue({data : _data, front : _front, back : _back});
     }
-
+*/
 	/* Returns the number of people waiting in line */
 	function qsize() constant returns(uint8) {
 		// YOUR CODE HERE
@@ -39,12 +43,17 @@ contract Queue {
 	
 	/* Returns the address of the person in the front of the queue */
 	function getFirst() constant returns(address) {
-		// YOUR CODE HERE
+		return arr.data[arr.front];
 	}
 	
 	/* Allows `msg.sender` to check their position in the queue */
 	function checkPlace() constant returns(uint8) {
-		// YOUR CODE HERE
+	    for (uint8 i = 0; i < arr.back; i++) {
+            if (arr.data[arr.front + i] == msg.sender) {
+                return i;
+            }
+        }
+        return size + 1;
 	}
 	
 	/* Allows anyone to expel the first person in line if their time
@@ -58,11 +67,17 @@ contract Queue {
 	 * they are done with their purchase
 	 */
 	function dequeue() {
-		// YOUR CODE HERE
+        arr.data[arr.front] = address(0x0);
+        arr.front = (arr.front + 1) % size;
 	}
 
 	/* Places `addr` in the first empty position in the queue */
 	function enqueue(address addr) {
-		// YOUR CODE HERE
+		if (qsize() == size) {
+            throw;
+        } else {
+            arr.data[arr.back] = addr;
+            arr.back = (arr.back + 1) % size;
+        }
 	}
 }

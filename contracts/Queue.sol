@@ -18,14 +18,22 @@ contract Queue {
 	/* Add constructor */
 	// YOUR CODE HERE
 
+	struct Queue {
+        uint[] data;
+        uint front;
+        uint back;
+    }
+
 	/* Returns the number of people waiting in line */
 	function qsize() constant returns(uint8) {
 		// YOUR CODE HERE
+		return back - front
 	}
 
 	/* Returns whether the queue is empty or not */
 	function empty() constant returns(bool) {
 		// YOUR CODE HERE
+		return front == back
 	}
 	
 	/* Returns the address of the person in the front of the queue */
@@ -55,5 +63,6 @@ contract Queue {
 	/* Places `addr` in the first empty position in the queue */
 	function enqueue(address addr) {
 		// YOUR CODE HERE
+		data.push(addr)
 	}
 }

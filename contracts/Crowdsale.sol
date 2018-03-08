@@ -14,13 +14,24 @@ contract Crowdsale {
 	address owner;
     Queue public buyers;
 	Token public tokens;
+    uint public worth;
 	uint public totalTokensSold;
 
 	uint public startTime;
     uint public endTime;
 
+    event Purchase(address _purchaser, uint256 _value);
+    event Refund(address _refunder, uint256 _value)
+
     modifier ownerOnly() {
         if (msg.sender != owner) {
+            throw;
+        }
+        _;
+    }
+
+    modifier onTime() {
+        if (now < startTime || now > endTime) {
             throw;
         }
         _;
@@ -31,6 +42,7 @@ contract Crowdsale {
         tokens = new Token(_totalSupply);
         startTime = now;
         endTime = now + _saleTime;
+        totalTokensSold = 0;
     }
 
     function mintTokens(uint256 _value) ownerOnly returns (bool success) {
@@ -40,6 +52,24 @@ contract Crowdsale {
 
     function burnTokens(uint256 _value) ownerOnly returns (bool success) {
         tokens.burn(_value);
+        return true;
+    }
+
+    function buyToken() onTime payable external returns (bool success) {
+        if (tokens.getFirst() != msg.sender) {
+            return false;
+        } else {
+            Purchase(msg.sender, msg.value * worth);
+            token.transfer(msg.sender, msg.value * worth);
+            totalTokensSold += msg.value;
+            return true;
+        }
+    }
+
+    function refundToken() onTime payable external returns (bool success) {
+        Refund(msg.sender, msg.value * worth);
+        token.transfer(this, msg.value * worth);
+        totalTokensSold -= msg.value;
         return true;
     }
 

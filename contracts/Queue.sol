@@ -9,75 +9,85 @@ pragma solidity ^0.4.15;
 
 contract Queue {
 	/* State variables */
-    struct _Queue {
-        address[] data;
-        uint8 front;
-        uint8 back;
-    }
+    address[] data;
+    uint8 pointer;
 	uint8 size = 5;
-    _Queue arr;
+    uint time_limit;
+    uint time_spent;
 	// YOUR CODE HERE
-    	/* Add events */
+    event removed(address);
 	// YOUR CODE HERE
 
 	/* Add constructor */
-    function Queue() public {
-        arr = _Queue({data : new address[](size), front : 0, back : 1});
+    function Queue(uint8 _time_limit) public {
+        data = new address[](size);
+        front = 0;
+        time_limit = _time_limit;
     }
-/*
-    function Queue(address[] _data, uint8 _front, uint8 _back) public {
-        arr = _Queue({data : _data, front : _front, back : _back});
-    }
-*/
+
 	/* Returns the number of people waiting in line */
 	function qsize() constant returns(uint8) {
 		// YOUR CODE HERE
-		return arr.back - arr.front;
+        return pointer;
 	}
 
 	/* Returns whether the queue is empty or not */
 	function empty() constant returns(bool) {
 		// YOUR CODE HERE
-		return arr.front == arr.back;
+		return pointer == 0;
 	}
-	
+
 	/* Returns the address of the person in the front of the queue */
 	function getFirst() constant returns(address) {
-		return arr.data[arr.front];
+		return data[0];
 	}
-	
+
 	/* Allows `msg.sender` to check their position in the queue */
 	function checkPlace() constant returns(uint8) {
-	    for (uint8 i = 0; i < arr.back; i++) {
-            if (arr.data[arr.front + i] == msg.sender) {
-                return i;
+	    for (uint8 i = 0; i < size; i++) {
+            if (data[i] == msg.sender) {
+                return i + 1;
             }
         }
         return size + 1;
 	}
-	
+
 	/* Allows anyone to expel the first person in line if their time
 	 * limit is up
 	 */
 	function checkTime() {
-		// YOUR CODE HERE
+        if (now >= time_spent + time_limit) {
+            removed(data[0]);
+            dequeue();
+        }
 	}
-	
+
 	/* Removes the first person in line; either when their time is up or when
 	 * they are done with their purchase
 	 */
 	function dequeue() {
-        arr.data[arr.front] = address(0x0);
-        arr.front = (arr.front + 1) % size;
-	}
+        data[front] = address(0x0);
+        for (uint8 i = 0; i < pointer - 1; i++) {
+            data[i] = data[i + 1];
+        }
+        data[pointer - 1] = 0;
+        pointer--;
+        time_spent = now;
+    }
 
 	/* Places `addr` in the first empty position in the queue */
 	function enqueue(address addr) {
 		if (qsize() == size) {
             throw;
+        } else if (empty()) {
+            time_spent = now;
         } else {
-            arr.data[arr.back] = addr;
-            arr.back = (arr.back + 1) % size;
+            data[pointer] = addr; 
+            pointer++;
         }
 	}
+
+    function () {
+
+    }
 }

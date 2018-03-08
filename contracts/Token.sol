@@ -9,7 +9,7 @@ import './interfaces/ERC20Interface.sol';
  */
 
 contract Token is ERC20Interface {
-    uint256 totalSupply;
+    uint256 _totalSupply;
     mapping(address => uint256) balances;
     mapping(address => mapping (address => uint256)) allowed;
 
@@ -21,8 +21,8 @@ contract Token is ERC20Interface {
         totalSupply = amount;
     }
 
-    function totalSupply() constant returns (uint256 total) {
-        return totalSupply;
+    function totalSupply() constant returns (uint256 _totalSupply) {
+        return _totalSupply;
     }
 
     function balanceOf(address _owner) constant returns (uint256 balance) {

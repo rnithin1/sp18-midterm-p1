@@ -16,6 +16,7 @@ contract Token is ERC20Interface {
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
     event Burned(address indexed _burner, uint256 _value);
+    event Minted(uint256 _value);
 
     function Token(uint256 amount) {
         totalSupply = amount;
@@ -75,6 +76,12 @@ contract Token is ERC20Interface {
             totalSupply -= _value;
             return true;
         }
+    }
+
+    function mint(uint256 _value) returns (bool success) {
+        Minted(_value);
+        totalSupply += _value;
+        return true;
     }
 
     function () {

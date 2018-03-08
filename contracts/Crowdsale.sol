@@ -37,13 +37,6 @@ contract Crowdsale {
         _;
     }
 
-    modifier validAmount() {
-        if (tokens.totalSupply() < totalTokensSold) {
-            throw;
-        }
-        _;
-    }
-
     function Crowdsale(uint _totalSupply, uint _saleTime) public {
         owner = msg.sender;
         tokens = new Token(_totalSupply);
@@ -66,7 +59,7 @@ contract Crowdsale {
         return true;
     }
 
-    function buyToken() onTime validAmount public payable external returns (bool success) {
+    function buyToken() onTime payable external returns (bool success) {
         if (buyers.getFirst() != msg.sender) {
             return false;
         } else {
@@ -77,7 +70,7 @@ contract Crowdsale {
         }
     }
 
-    function refundToken() onTime validAmount public payable external returns (bool success) {
+    function refundToken() onTime payable external returns (bool success) {
         Refund(msg.sender, msg.value * worth);
         tokens.transferFrom(msg.sender, this, msg.value * worth);
         totalTokensSold -= msg.value;

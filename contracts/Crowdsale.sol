@@ -16,6 +16,7 @@ contract Crowdsale {
 	Token public tokens;
     uint public worth;
 	uint public totalTokensSold;
+    uint public totalMoneyObtained;
 
 	uint public startTime;
     uint public endTime;
@@ -43,6 +44,7 @@ contract Crowdsale {
         startTime = now;
         endTime = now + _saleTime;
         totalTokensSold = 0;
+        totalMoneyObtained = 0;
     }
 
     function timeLeft() public returns (uint) {
@@ -59,30 +61,43 @@ contract Crowdsale {
         return true;
     }
 
+    // buyToken will take in Wei
     function buyToken() onTime payable external returns (bool success) {
-        if (buyers.getFirst() != msg.sender) {
+        if (buyers.getFirst() != msg.sender && msg.value > tokens.totalSupply()) {
             return false;
         } else {
-            Purchase(msg.sender, msg.value * worth);
-            tokens.transferFrom(this, msg.sender, msg.value * worth);
-            totalTokensSold += msg.value;
+            Purchase(msg.sender, msg.value);
+            totalMoneyObtained += msg.value;
+            tokens.transferFrom(msg.sender, this, msg.value * worth);
+            totalTokensSold += msg.value * worth;
             return true;
         }
     }
 
-    function refundToken() onTime payable external returns (bool success) {
-        Refund(msg.sender, msg.value * worth);
-        tokens.transferFrom(msg.sender, this, msg.value * worth);
-        totalTokensSold -= msg.value;
-        return true;
+    // refundToken will take in Tokens
+    function refundToken(uint _value) onTime payable external returns (bool success) {
+        if (tokens.balanceOf(msg.sender) > _value) {
+            return false;
+        } else {
+            Refund(msg.sender, _value / worth);
+            totalMoneyObtained -= _value / worth;
+            tokens.transferFrom(msg.sender, this, _value);
+            msg.sender.send(msg.value / worth);
+            totalTokensSold -= _value;
+            return true;
+        }
     }
 
     function transferOwner() ownerOnly returns (bool success) {
         if (now < endTime) {
             return false;
         } else {
-            tokens.transferFrom(this, owner, this.balance);
+            owner.send(totalMoneyObtained);
         }
+    }
+
+    function enterQueue() onTime public {
+        buyers.enqueue(msg.sender);
     }
 
     function () {

@@ -10,6 +10,7 @@ import './interfaces/ERC20Interface.sol';
 
 contract Token is ERC20Interface {
     // uint256 _totalSupply;
+    address owner;
     mapping(address => uint256) balances;
     mapping(address => mapping (address => uint256)) allowed;
 
@@ -18,8 +19,16 @@ contract Token is ERC20Interface {
     event Burned(address indexed _burner, uint256 _value);
     event Minted(uint256 _value);
 
+    modifier ownerOnly() {
+        if (msg.sender != owner) {
+            throw;
+        }
+        _;
+    }
+
     function Token(uint256 amount) {
         totalSupply = amount;
+        owner = msg.sender;
     }
 
     // function totalSupply() constant returns (uint256 _totalSupply) {
@@ -78,7 +87,7 @@ contract Token is ERC20Interface {
         }
     }
 
-    function mint(uint256 _value) returns (bool success) {
+    function mint(uint256 _value) ownerOnly returns (bool success) {
         Minted(_value);
         totalSupply += _value;
         return true;

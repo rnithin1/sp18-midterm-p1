@@ -10,5 +10,20 @@ import './Token.sol';
  */
 
 contract Crowdsale {
-	// YOUR CODE HERE
+
+	address owner;
+    Queue public buyers;
+	Token public tokens;
+	uint public totalTokensSold;
+
+	uint public startTime;
+    uint public endTime;
+
+    function Crowdsale(uint _totalSupply, uint _saleTime) public {
+        owner = msg.sender;
+        tokens = new Token(_totalSupply);
+        startTime = now;
+        endTime = now + _saleTime;
+    }
+
 }

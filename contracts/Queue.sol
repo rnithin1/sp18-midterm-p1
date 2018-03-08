@@ -21,7 +21,7 @@ contract Queue {
 	/* Add constructor */
     function Queue(uint8 _time_limit) public {
         data = new address[](size);
-        front = 0;
+        pointer = 0;
         time_limit = _time_limit;
     }
 
@@ -66,7 +66,7 @@ contract Queue {
 	 * they are done with their purchase
 	 */
 	function dequeue() {
-        data[front] = address(0x0);
+        data[pointer] = address(0x0);
         for (uint8 i = 0; i < pointer - 1; i++) {
             data[i] = data[i + 1];
         }

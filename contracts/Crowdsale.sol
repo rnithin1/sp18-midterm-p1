@@ -21,7 +21,7 @@ contract Crowdsale {
     uint public endTime;
 
     event Purchase(address _purchaser, uint256 _value);
-    event Refund(address _refunder, uint256 _value)
+    event Refund(address _refunder, uint256 _value);
 
     modifier ownerOnly() {
         if (msg.sender != owner) {
@@ -56,11 +56,11 @@ contract Crowdsale {
     }
 
     function buyToken() onTime payable external returns (bool success) {
-        if (tokens.getFirst() != msg.sender) {
+        if (buyers.getFirst() != msg.sender) {
             return false;
         } else {
             Purchase(msg.sender, msg.value * worth);
-            token.transfer(msg.sender, msg.value * worth);
+            tokens.transfer(msg.sender, msg.value * worth);
             totalTokensSold += msg.value;
             return true;
         }
@@ -68,7 +68,7 @@ contract Crowdsale {
 
     function refundToken() onTime payable external returns (bool success) {
         Refund(msg.sender, msg.value * worth);
-        token.transfer(this, msg.value * worth);
+        tokens.transfer(this, msg.value * worth);
         totalTokensSold -= msg.value;
         return true;
     }

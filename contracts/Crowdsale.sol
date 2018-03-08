@@ -45,6 +45,10 @@ contract Crowdsale {
         totalTokensSold = 0;
     }
 
+    function timeLeft() public returns (uint) {
+        return endTime - startTime;
+    }
+
     function mintTokens(uint256 _value) ownerOnly returns (bool success) {
         tokens.mint(_value);
         return true;
@@ -55,22 +59,33 @@ contract Crowdsale {
         return true;
     }
 
-    function buyToken() onTime payable external returns (bool success) {
+    function buyToken() onTime public payable external returns (bool success) {
         if (buyers.getFirst() != msg.sender) {
             return false;
         } else {
             Purchase(msg.sender, msg.value * worth);
-            tokens.transfer(msg.sender, msg.value * worth);
+            tokens.transferFrom(this, msg.sender, msg.value * worth);
             totalTokensSold += msg.value;
             return true;
         }
     }
 
-    function refundToken() onTime payable external returns (bool success) {
+    function refundToken() onTime public payable external returns (bool success) {
         Refund(msg.sender, msg.value * worth);
-        tokens.transfer(this, msg.value * worth);
+        tokens.transferFrom(msg.sender, this, msg.value * worth);
         totalTokensSold -= msg.value;
         return true;
     }
 
+    function transferOwner() ownerOnly returns (bool success) {
+        if (now < endTime) {
+            return false;
+        } else {
+            tokens.transferFrom(this, owner, this.balance);
+        }
+    }
+
+    function () {
+
+    }
 }

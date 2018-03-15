@@ -1,3 +1,6 @@
+thin Raghavan - 3033077257 - rnithin@berkeley.edu <br />
+Karsten Fonseca - 26428719 - kfonseca@berkeley.edu<br />
+
 # MIDTERM: Launching an ICO
 Welcome to the Blockchain for Developers DeCal's midterm assignment. You'll be designing your own ICO.
 
